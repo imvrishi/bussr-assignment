@@ -15,6 +15,14 @@ export class TicketService {
     return this.ticketModel.find().exec();
   }
 
+  async findById(id: string): Promise<Ticket> {
+    return this.ticketModel
+      .findOne({
+        _id: id,
+      })
+      .exec();
+  }
+
   async create(createCatDto: CreateTicketDto): Promise<Ticket> {
     const createdCat = new this.ticketModel(createCatDto);
     return createdCat.save();

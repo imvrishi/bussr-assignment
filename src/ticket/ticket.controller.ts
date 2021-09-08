@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { TicketService } from './ticket.service';
 import { Ticket } from './schemas/ticket.schema';
@@ -12,6 +12,11 @@ export class TicketController {
   @Get()
   findAll(): Promise<Ticket[]> {
     return this.ticketService.findAll();
+  }
+
+  @Get(':id')
+  findById(@Param('id') id: string): Promise<Ticket> {
+    return this.ticketService.findById(id);
   }
 
   @Post()
