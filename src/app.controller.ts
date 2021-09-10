@@ -4,11 +4,25 @@ import { AuthService } from './auth/auth.service';
 import { LoginDto } from './auth/dto/login.dto';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { LocalAuthGuard } from './auth/guards/local-auth.guard';
+import { UsersService } from './users/users.service';
 
 @Controller()
 @ApiTags('Auth')
 export class AppController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {
+    this.createDefaultUser();
+  }
+
+  async createDefaultUser() {
+    try {
+      await this.usersService.findOne('bussr');
+    } catch (e) {
+      await this.usersService.create('bussr', 'bussr');
+    }
+  }
 
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')

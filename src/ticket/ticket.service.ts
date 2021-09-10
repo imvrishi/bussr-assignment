@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Ticket, TicketDocument } from './schemas/ticket.schema';
@@ -15,36 +19,71 @@ export class TicketService {
   async create(createTicketDto: CreateTicketDto): Promise<Ticket> {
     const { customerName, performanceTitle, performanceTime, ticketPrice } =
       createTicketDto;
+    const creationDate = new Date();
 
     const ticket = new this.ticketModel({
-      creationDate: Date.now(),
+      creationDate,
       customerName,
       performanceTitle,
       performanceTime,
       ticketPrice,
     });
-    return ticket.save();
+    const row = await ticket.save();
+
+    if (!row) {
+      throw new InternalServerErrorException();
+    }
+
+    return {
+      id: row.id,
+      creationDate,
+      customerName,
+      performanceTitle,
+      performanceTime,
+      ticketPrice,
+    };
   }
 
   async findAll(filterTicketDto: FilterTicketDto): Promise<Ticket[]> {
     const offset = filterTicketDto.offset || 0;
     const limit = filterTicketDto.limit || 10;
 
-    return this.ticketModel.find().skip(offset).limit(limit).exec();
+    const rows = await this.ticketModel.find().skip(offset).limit(limit).exec();
+
+    const tickets: Ticket[] = [];
+    for (const row of rows) {
+      tickets.push({
+        id: row.id,
+        creationDate: row.creationDate,
+        customerName: row.customerName,
+        performanceTitle: row.performanceTitle,
+        performanceTime: row.performanceTime,
+        ticketPrice: row.ticketPrice,
+      });
+    }
+
+    return tickets;
   }
 
   async findById(id: string): Promise<Ticket> {
-    const ticket = await this.ticketModel
+    const row = await this.ticketModel
       .findOne({
         _id: id,
       })
       .exec();
 
-    if (!ticket) {
-      throw new NotFoundException(`Ticket not found`);
+    if (!row) {
+      throw new NotFoundException();
     }
 
-    return ticket;
+    return {
+      id: row.id,
+      creationDate: row.creationDate,
+      customerName: row.customerName,
+      performanceTitle: row.performanceTitle,
+      performanceTime: row.performanceTime,
+      ticketPrice: row.ticketPrice,
+    };
   }
 
   async update(id: string, createCatDto: CreateTicketDto): Promise<void> {
@@ -53,7 +92,7 @@ export class TicketService {
       .exec();
 
     if (result.nModified === 0) {
-      throw new NotFoundException(`Ticket not found`);
+      throw new NotFoundException();
     }
   }
 
@@ -61,7 +100,7 @@ export class TicketService {
     const result = await this.ticketModel.deleteOne({ _id: id }).exec();
 
     if (result.deletedCount === 0) {
-      throw new NotFoundException(`Ticket not found`);
+      throw new NotFoundException();
     }
   }
 }

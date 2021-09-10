@@ -7,15 +7,18 @@ import {
   Put,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { TicketService } from './ticket.service';
 import { Ticket } from './schemas/ticket.schema';
 import { FilterTicketDto } from './dto/filter-ticket.dto';
 import { CreateTicketDto } from './dto/create-ticket.dto';
+import { JwtAuthGuard } from './../auth/guards/jwt-auth.guard';
 
 @Controller('tickets')
 @ApiTags('Ticket')
+@UseGuards(JwtAuthGuard)
 export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
 

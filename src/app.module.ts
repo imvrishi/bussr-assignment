@@ -7,7 +7,7 @@ import { AppController } from './app.controller';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/bussr'),
+    MongooseModule.forRoot('mongodb://mongo:27017/bussr'),
     TicketModule,
     AuthModule,
     UsersModule,
