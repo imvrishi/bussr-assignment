@@ -4,6 +4,7 @@ import { AnalyticsMethod } from './../enums';
 
 export class AnalyticsDto {
   @ApiProperty({
+    enum: AnalyticsMethod,
     default: AnalyticsMethod.AGGREGATION,
   })
   @IsEnum(AnalyticsMethod)

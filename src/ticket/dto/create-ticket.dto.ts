@@ -8,12 +8,16 @@ import {
 } from 'class-validator';
 
 export class CreateTicketDto {
-  @ApiProperty()
+  @ApiProperty({
+    default: 'bussr',
+  })
   @IsString()
   @IsAlpha()
   customerName: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    default: 'bussr',
+  })
   @IsString()
   @IsAlphanumeric()
   performanceTitle: string;
@@ -22,7 +26,9 @@ export class CreateTicketDto {
   @IsDate()
   performanceTime: Date;
 
-  @ApiProperty()
+  @ApiProperty({
+    default: 200,
+  })
   @IsNumber()
   ticketPrice: number;
 }
