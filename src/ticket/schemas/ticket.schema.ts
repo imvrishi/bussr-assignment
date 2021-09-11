@@ -1,14 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Schema as MSchema, Document } from 'mongoose';
+import { Document } from 'mongoose';
 
 export type TicketDocument = Ticket & Document;
 
 @Schema()
 export class Ticket {
-  @Prop({
-    auto: true,
-    type: MSchema.Types.ObjectId,
-  })
+  @Prop()
   id: string;
 
   @Prop()

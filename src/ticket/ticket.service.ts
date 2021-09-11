@@ -21,14 +21,13 @@ export class TicketService {
       createTicketDto;
     const creationDate = new Date();
 
-    const ticket = new this.ticketModel({
+    const row = await this.ticketModel.create({
       creationDate,
       customerName,
       performanceTitle,
       performanceTime,
       ticketPrice,
     });
-    const row = await ticket.save();
 
     if (!row) {
       throw new InternalServerErrorException();
@@ -48,7 +47,10 @@ export class TicketService {
     const offset = filterTicketDto.offset || 0;
     const limit = filterTicketDto.limit || 10;
 
-    const rows = await this.ticketModel.find().skip(offset).limit(limit).exec();
+    const rows = await this.ticketModel.aggregate([
+      { $skip: offset },
+      { $limit: limit },
+    ]);
 
     const tickets: Ticket[] = [];
     for (const row of rows) {
@@ -66,11 +68,7 @@ export class TicketService {
   }
 
   async findById(id: string): Promise<Ticket> {
-    const row = await this.ticketModel
-      .findOne({
-        _id: id,
-      })
-      .exec();
+    const row = await this.ticketModel.findById(id);
 
     if (!row) {
       throw new NotFoundException();
@@ -87,9 +85,10 @@ export class TicketService {
   }
 
   async update(id: string, createTicketDto: CreateTicketDto): Promise<void> {
-    const result = await this.ticketModel
-      .updateOne({ _id: id }, createTicketDto)
-      .exec();
+    const result = await this.ticketModel.updateOne(
+      { _id: id },
+      createTicketDto,
+    );
 
     if (result.nModified === 0) {
       throw new NotFoundException();
@@ -97,7 +96,7 @@ export class TicketService {
   }
 
   async delete(id: string): Promise<void> {
-    const result = await this.ticketModel.deleteOne({ _id: id }).exec();
+    const result = await this.ticketModel.deleteOne({ _id: id });
 
     if (result.deletedCount === 0) {
       throw new NotFoundException();

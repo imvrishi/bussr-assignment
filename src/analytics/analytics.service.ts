@@ -94,9 +94,13 @@ export class AnalyticsService {
     fromDate: Date,
     toDate: Date,
   ): Promise<Array<Earned>> {
-    const rows = await this.ticketModel.find({
-      performanceTime: { $gte: fromDate, $lte: toDate },
-    });
+    const rows = await this.ticketModel.aggregate([
+      {
+        $match: {
+          performanceTime: { $gte: fromDate, $lte: toDate },
+        },
+      },
+    ]);
 
     const groupBy: Record<string, number> = {};
     for (const row of rows) {
@@ -183,9 +187,13 @@ export class AnalyticsService {
     fromDate: Date,
     toDate: Date,
   ): Promise<Array<Visited>> {
-    const rows = await this.ticketModel.find({
-      performanceTime: { $gte: fromDate, $lte: toDate },
-    });
+    const rows = await this.ticketModel.aggregate([
+      {
+        $match: {
+          performanceTime: { $gte: fromDate, $lte: toDate },
+        },
+      },
+    ]);
 
     const groupBy: Record<string, number> = {};
     for (const row of rows) {
