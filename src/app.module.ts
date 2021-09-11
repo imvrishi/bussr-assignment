@@ -8,7 +8,11 @@ import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://mongo:27017/bussr'),
+    MongooseModule.forRootAsync({
+      useFactory: () => ({
+        uri: process.env.MONGO_URI || 'mongodb://localhost:27017/bussr',
+      }),
+    }),
     TicketModule,
     AuthModule,
     UsersModule,
