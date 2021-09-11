@@ -35,7 +35,7 @@ export class TicketService {
     }
 
     return {
-      id: row.id,
+      id: row._id,
       creationDate,
       customerName,
       performanceTitle,
@@ -53,7 +53,7 @@ export class TicketService {
     const tickets: Ticket[] = [];
     for (const row of rows) {
       tickets.push({
-        id: row.id,
+        id: row._id,
         creationDate: row.creationDate,
         customerName: row.customerName,
         performanceTitle: row.performanceTitle,
@@ -77,7 +77,7 @@ export class TicketService {
     }
 
     return {
-      id: row.id,
+      id: row._id,
       creationDate: row.creationDate,
       customerName: row.customerName,
       performanceTitle: row.performanceTitle,
@@ -86,9 +86,9 @@ export class TicketService {
     };
   }
 
-  async update(id: string, createCatDto: CreateTicketDto): Promise<void> {
+  async update(id: string, createTicketDto: CreateTicketDto): Promise<void> {
     const result = await this.ticketModel
-      .updateOne({ _id: id }, createCatDto)
+      .updateOne({ _id: id }, createTicketDto)
       .exec();
 
     if (result.nModified === 0) {
